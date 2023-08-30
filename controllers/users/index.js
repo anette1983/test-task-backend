@@ -1,15 +1,17 @@
 const {
-  getAllUsers,
-  getById,
-  addUser,
+  getUsers,
+  getUserById,
+  createUser,
   updateUser,
   deleteUser,
+  pool,
 } = require("./users");
 
 module.exports = {
-  getAllUsers,
-  getById,
-  addUser,
+  getUsers,
+  getUserById,
+  createUser,
   updateUser,
   deleteUser,
+  pool,
 };
