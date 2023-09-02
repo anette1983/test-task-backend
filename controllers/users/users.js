@@ -2,45 +2,56 @@ const HttpError = require("../../helpers/HttpError");
 
 const Pool = require("pg").Pool;
 const pool = new Pool({
-  // host: "localhost",
   host: "db",
-  // database: "users_db",
   database: "postgres",
   user: "postgres",
   password: "6528",
+  // host: "localhost",
+  // database: "users_db",
   // port: 4321,
+  // для локального серверу
 });
-
-// pool.query("SELECT NOW()", (err, res) => {
-//   console.log(err, res);
-//   // pool.end();
-// });
 
 const getUsers = async (request, response) => {
   try {
     const { role } = request.query; // Отримати параметр "role" з запиту
 
-    console.log("role :>> ", typeof role);
+    let query = `
+      SELECT users.*, profiles.*
+      FROM users
+      JOIN profiles ON users.profileId = profiles.id
+    `;
 
-    let query = "SELECT * FROM users";
-    //   let query = `
-    //   SELECT users.*, profiles.*
-    //   FROM users
-    //   JOIN profiles ON users.profileid = profiles.id
-    // `;
     const values = [];
 
     if (role) {
-      query += " WHERE role = $1";
-      // query += " WHERE users.role = $1";
+      query += " WHERE users.role = $1";
       values.push(role.toUpperCase());
     }
 
-    query += " ORDER BY id ASC";
-    //  query += " ORDER BY users.id ASC";
+    query += " ORDER BY users.id ASC";
 
     const results = await pool.query(query, values);
-    response.status(200).json(results.rows);
+    const mergedResults = results.rows.map((row) => {
+      console.log(row.profileid);
+      return {
+        user: {
+          id: row.id,
+          username: row.username,
+          email: row.email,
+          role: row.role,
+          dateCreate: row.datecreate,
+          profileId: row.profileid,
+        },
+        profile: {
+          id: row.profileid,
+          firstName: row.firstname,
+          lastName: row.lastname,
+          state: row.state,
+        },
+      };
+    });
+    response.status(200).json(mergedResults);
   } catch (error) {
     await pool.query("ROLLBACK");
     console.error("Error getting data:", error);
