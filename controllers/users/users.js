@@ -2,25 +2,19 @@ const HttpError = require("../../helpers/HttpError");
 
 const Pool = require("pg").Pool;
 const pool = new Pool({
+  // host: "localhost",
+  host: "db",
+  // database: "users_db",
+  database: "postgres",
   user: "postgres",
-  host: "localhost",
-  database: "users_db",
   password: "6528",
-  port: 5432,
+  // port: 4321,
 });
 
-// const getUsers = async (request, response) => {
-//   try {
-//     const results = await pool.query("SELECT * FROM users ORDER BY id ASC");
-//     response.status(200).json(results.rows);
-//   } catch (error) {
-//     await pool.query("ROLLBACK");
-//     console.error("Error getting data:", error);
-//     response
-//       .status(500)
-//       .json({ error: "An error occurred while fetching data." });
-//   }
-// };
+// pool.query("SELECT NOW()", (err, res) => {
+//   console.log(err, res);
+//   // pool.end();
+// });
 
 const getUsers = async (request, response) => {
   try {
@@ -29,14 +23,21 @@ const getUsers = async (request, response) => {
     console.log("role :>> ", typeof role);
 
     let query = "SELECT * FROM users";
+    //   let query = `
+    //   SELECT users.*, profiles.*
+    //   FROM users
+    //   JOIN profiles ON users.profileid = profiles.id
+    // `;
     const values = [];
 
     if (role) {
       query += " WHERE role = $1";
+      // query += " WHERE users.role = $1";
       values.push(role.toUpperCase());
     }
 
     query += " ORDER BY id ASC";
+    //  query += " ORDER BY users.id ASC";
 
     const results = await pool.query(query, values);
     response.status(200).json(results.rows);
