@@ -4,7 +4,6 @@ const {
   createUser,
   updateUser,
   deleteUser,
-  pool,
 } = require("./users");
 
 module.exports = {
@@ -13,5 +12,4 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  pool,
 };

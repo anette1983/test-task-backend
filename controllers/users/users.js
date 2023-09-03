@@ -1,16 +1,7 @@
 const HttpError = require("../../helpers/HttpError");
 
-const Pool = require("pg").Pool;
-const pool = new Pool({
-  host: "db",
-  database: "postgres",
-  user: "postgres",
-  password: "6528",
-  // host: "localhost",
-  // database: "users_db",
-  // port: 4321,
-  // для локального серверу
-});
+const { pool } = require("../../config/config");
+
 
 const getUsers = async (request, response) => {
   try {
@@ -33,7 +24,6 @@ const getUsers = async (request, response) => {
 
     const results = await pool.query(query, values);
     const mergedResults = results.rows.map((row) => {
-      console.log(row.profileid);
       return {
         user: {
           id: row.id,
@@ -79,20 +69,29 @@ const getUserById = async (request, response) => {
 
 const createUser = async (request, response) => {
   const { username, firstName, lastName, email, role, state } = request.body;
+
   await pool.connect();
   try {
     await pool.query("BEGIN");
     // profile transaction
     const profileQuery =
       "INSERT INTO profiles (firstName, lastName, state) VALUES ($1, $2, $3) RETURNING id";
-    const profileValues = [firstName, lastName, state];
+    const profileValues = [firstName, lastName, state.toLowerCase()];
     const profileResult = await pool.query(profileQuery, profileValues);
 
     // user transaction
     const userQuery =
       "INSERT INTO users (username, email, role, profileid) VALUES ($1, $2, $3, $4) RETURNING id";
-    const userValues = [username, email, role, profileResult.rows[0].id];
+    const userValues = [
+      username,
+      email,
+      role.toUpperCase(),
+      profileResult.rows[0].id,
+    ];
     const userResult = await pool.query(userQuery, userValues);
+
+    console.log("profileResult :>> ", profileResult);
+    console.log("userResult :>> ", userResult);
 
     await pool.query("COMMIT");
 
@@ -116,15 +115,14 @@ const updateUser = async (request, response) => {
     // profile transaction
     const profileQuery =
       "UPDATE profiles SET firstName = $1, lastName = $2, state = $3 WHERE id = $4";
-    const profileValues = [firstName, lastName, state, id];
+    const profileValues = [firstName, lastName, state.toLowerCase(), id];
     await pool.query(profileQuery, profileValues);
 
     // user transaction
     const userQuery =
       "UPDATE users SET username = $1, email = $2, role = $3 WHERE id = $4";
-    const userValues = [username, email, role, id];
+    const userValues = [username, email, role.toUpperCase(), id];
     const results = await pool.query(userQuery, userValues);
-    console.log("results :>> ", results);
     if (results.rowCount === 0) {
       throw HttpError(404, `User with id = ${id} not found`);
     }
@@ -173,5 +171,4 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  pool,
 };
