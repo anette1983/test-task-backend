@@ -91,7 +91,14 @@ docker exec -it test-task-backend-db-1 psql -U postgres
 ```
 postgres=# CREATE TYPE gender AS ENUM ('male', 'female', 'other');
 ```
-
+```
+postgres=# CREATE TABLE profiles (
+id SERIAL PRIMARY KEY,
+firstName VARCHAR(50) NOT NULL,
+lastName VARCHAR(100) NOT NULL,
+state gender
+);
+```
 ```
 postgres=# CREATE TABLE users (
 id SERIAL PRIMARY KEY,
@@ -101,15 +108,6 @@ role VARCHAR(20) DEFAULT 'USER',
 dateCreate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 profileId SERIAL,
 FOREIGN KEY (profileId) REFERENCES profiles(id)
-);
-```
-
-```
-postgres=# CREATE TABLE profiles (
-id SERIAL PRIMARY KEY,
-firstName VARCHAR(50) NOT NULL,
-lastName VARCHAR(100) NOT NULL,
-state gender
 );
 ```
 
