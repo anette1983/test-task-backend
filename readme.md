@@ -132,17 +132,6 @@ To see all users' information in the terminal open new terminal and run:
 curl localhost:3000/api/users
 ```
 
-Adding new user through the command-line interface with SQL queries:
-
-```
-INSERT INTO profiles (firstName, lastName, state)
-VALUES ('test', 'test', 'male/female/other');
-INSERT INTO users (username, email, role)
-VALUES ('test', 'test@mail.com', 'ADMIN/USER/SUPERUSER/MODERATOR');
-```
-
-**The order is important!**
-
 ## Usage
 
 To use the project, follow these steps:
