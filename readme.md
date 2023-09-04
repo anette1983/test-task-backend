@@ -12,6 +12,7 @@
 
 This is a NodeJS REST API application developed using such technologies as: NodeJS, Express framework, PostgreSQL, node-postgres, Docker, docker-compose, Joi, Morgan, nodemon. It's a functioning API server that runs on Node.js and is hooked up to an active PostgreSQL database.
 Please, read carefully the installation and usage sections before running the project. 
+- [App demo video](https://drive.google.com/file/d/11IPPkXVVzY5j6PmCpNDPXKaKiR2X3rdi/view?usp=sharing)
 
 ## Installation
 
